@@ -1,5 +1,3 @@
-// Remove all comments that begin with //, and replace appropriately.
-// Feel free to modify ANYTHING in this file.
 package loa;
 
 import static loa.Board.*;
@@ -22,7 +20,7 @@ class Move {
         s = s.trim();
         if (s.matches("[a-h][1-9]-[a-h][1-9]\\b.*")) {
             String p1 = s.substring(0, 2);
-            String p2 = s.substring(3);
+            String p2 = s.substring(3, 5);
             return create(board.col(p1), board.row(p1),
                           board.col(p2), board.row(p2), board);
         } else {
@@ -37,9 +35,17 @@ class Move {
         if (!inBounds(column0, row0) || !inBounds(column1, row1)) {
             return null;
         }
-        int moved = board.get(column0, row0).ordinal();
+        Piece movedPiece = board.get(column0, row0);
+        if (movedPiece == EMP) {
+            return null;
+        }
+        int moved = movedPiece.ordinal();
         int replaced = board.get(column1, row1).ordinal();
-        return _moves[column0][row0][column1][row1][moved][replaced];
+        try {
+            return _moves[column0][row0][column1][row1][moved][replaced];
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return null;
+        }
     }
 
     /** Return a K step move from (COLUMN0, ROW0) in the direction DIR on
@@ -104,9 +110,19 @@ class Move {
         return Math.max(Math.abs(_row1 - _row0), Math.abs(_col1 - _col0));
     }
 
+    /** Return the value assigned to the particular move. */
+    int value() {
+        return _value;
+    }
+
+    /** Changes the value of this move to VALUE. */
+    void changeValue(int value) {
+        _value = value;
+    }
+
     /** Return true IFF (C, R) denotes a square on the board, that is if
      *  1 <= C <= M, 1 <= R <= M. */
-    private static boolean inBounds(int c, int r) {
+    protected static boolean inBounds(int c, int r) {
         return 1 <= c && c <= M && 1 <= r && r <= M;
     }
 
@@ -122,6 +138,8 @@ class Move {
     private final Piece _moved;
     /** Piece replaced. */
     private final Piece _replaced;
+    /** Value of a particular move. */
+    private int _value = 0;
 
     /** The set of all possible Moves, indexed by row and column of
      *  start, row and column of destination, piece moved and piece replaced. */

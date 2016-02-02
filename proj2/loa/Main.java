@@ -1,5 +1,3 @@
-// Remove all comments that begin with //, and replace appropriately.
-// Feel free to modify ANYTHING in this file.
 package loa;
 
 import java.io.BufferedReader;
@@ -12,7 +10,7 @@ import ucb.util.CommandArgs;
 import static loa.Piece.*;
 
 /** Main class of the Lines of Action program.
- * @author
+ * @author Lucy Chen
  */
 public class Main {
 
@@ -50,7 +48,7 @@ public class Main {
 
     /** Print brief description of the command-line format. */
     static void usage() {
-        // FIXME
+        printResource("loa/usage.txt");
         System.exit(1);
     }
 

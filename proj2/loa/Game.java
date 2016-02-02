@@ -1,5 +1,3 @@
-// Remove all comments that begin with //, and replace appropriately.
-// Feel free to modify ANYTHING in this file.
 package loa;
 
 import java.io.BufferedReader;
@@ -9,12 +7,14 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.io.File;
+import java.util.Scanner;
 
 import static loa.Piece.*;
 import static loa.Main.*;
 
 /** Represents one game of Lines of Action.
- *  @author  */
+ *  @author Lucy Chen */
 class Game {
 
     /** A new series of Games. */
@@ -101,17 +101,66 @@ class Game {
             case "seed":
                 seedCommand(command.group(2));
                 return true;
-
-            // FILL THIS IN
-
+            case "clear":
+                clearCommand();
+                return true;
+            case "start":
+                startCommand();
+                return true;
+            case "set":
+                setCommand(command.group(2).toLowerCase(),
+                    command.group(3).toLowerCase());
+                return true;
+            case "dump":
+                dumpCommand();
+                return true;
             case "help":
                 help();
+                return true;
+            case "quit":
+                quit();
                 return true;
             default:
                 return false;
             }
         }
         return false;
+    }
+
+    /** Stops the current game if there is one and clears the board
+     *  to its initial configuration. */
+    private void clearCommand() {
+        _board.clear();
+        _playing = false;
+    }
+
+    /** Starts the game from the current position if the game isn't
+     *  already running. */
+    private void startCommand() {
+        _playing = true;
+    }
+
+    /** Stops the current game and sets the contents of square CR to
+     *  P. */
+    private void setCommand(String cr, String player) {
+        Piece piece = Piece.setValueOf(player);
+        _board.set(Board.col(cr), Board.row(cr), piece, piece.opposite());
+        _playing = false;
+    }
+
+    /** Mostly a testing method - Prints out the board to the
+     *  standard output. */
+    private void dumpCommand() {
+        System.out.println("===");
+        for (int r = Board.M; r >= 1; r--) {
+            System.out.print("    ");
+            for (int c = 1; c < Board.M; c++) {
+                System.out.print(_board.get(c, r).abbrev() + " ");    
+            }
+            System.out.println(_board.get(Board.M, r).abbrev());
+        }
+        System.out.println("Next move: " + _board.turn().fullName());
+        System.out.println("===");
     }
 
     /** Set player PLAYER ("white" or "black") to be a manual player. */
@@ -160,14 +209,10 @@ class Game {
                     continue;
                 }
                 next = _players[playerInd].makeMove();
+                assert !_playing || next != null;
             } else {
                 getMove();
                 next = null;
-            }
-            if (_playing) {
-                announceWinner();
-                _playing = false;
-                continue;
             }
             if (next != null) {
                 assert _board.isLegal(next);
@@ -182,8 +227,12 @@ class Game {
 
     /** Print an announcement of the winner. */
     private void announceWinner() {
-        // FIXME
-    }
+        if (_board.winner() == BP) {
+            System.out.println("Black wins.");
+        } else {
+            System.out.println("White wins.");
+        }
+    } // TEST
 
     /** Return an integer r, 0 <= r < N, randomly chosen from a
      *  uniform distribution using the current random source. */
@@ -193,7 +242,14 @@ class Game {
 
     /** Print a help message. */
     void help() {
-        // FIXME
+        try {
+            Scanner inp = new Scanner(new File("help.txt"));
+            while (inp.hasNextLine()) {
+                System.out.println(inp.nextLine());
+            }
+        } catch (IOException e) {
+            /** Do nothing */
+        }
     }
 
     /** The official game board. */

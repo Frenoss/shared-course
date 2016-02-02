@@ -1,5 +1,3 @@
-// Remove all comments that begin with //, and replace appropriately.
-// Feel free to modify ANYTHING in this file.
 package loa;
 
 import static loa.Piece.*;
@@ -16,7 +14,8 @@ public abstract class Player {
     }
 
     /** Return my next move from the current position in getBoard(), assuming
-     *  that side() == getBoard.turn(). */
+     *  that side() == getBoard.turn().  Returns null only if an intervening
+     *  command stops play. */
     abstract Move makeMove();
 
     /** Return which side I'm playing. */
