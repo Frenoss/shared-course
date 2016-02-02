@@ -1,0 +1,14 @@
+create table test (a, b, c);
+insert into test values '1', '2', '3';
+print test;
+store test;
+create table test2 (Title 1, b, c);
+create table test2 (a, a, b, c);
+load students;
+load enrolled;
+load schedule;
+print students;
+create table test3 as select SID, Firstname from students;
+print test3;
+
+exit;
